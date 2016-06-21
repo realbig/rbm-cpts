@@ -8,9 +8,7 @@
  * @subpackage RBM_CPTS/core
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-	die;
-}
+defined( 'ABSPATH' ) || die();
 
 abstract class RBM_CPT {
 

@@ -8,9 +8,7 @@
  * @subpackage RBM_CPTS/core
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-	die;
-}
+defined( 'ABSPATH' ) || die();
 
 class RBM_CPT_PalmTree extends RBM_CPT {
 
