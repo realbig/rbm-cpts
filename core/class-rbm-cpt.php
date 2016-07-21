@@ -13,11 +13,11 @@ defined( 'ABSPATH' ) || die();
 abstract class RBM_CPT {
 
 	public $post_type;
+	public $post_args;
 	public $label_singular;
 	public $label_plural;
-	public $icon;
 	public $p2p;
-	public $p2p_archive = false;
+	public $restricted = false;
 	public $supports = array( 'title', 'editor' );
 	public $labels = array();
 
@@ -31,12 +31,6 @@ abstract class RBM_CPT {
 		add_action( 'init', array( $this, 'create_cpt' ) );
 		add_filter( 'post_updated_messages', array( $this, 'post_messages' ) );
 		add_filter( 'p2p_relationships', array( $this, 'p2p' ) );
-
-		if ( $this->p2p_archive ) {
-
-			add_action( 'init', array( $this, 'add_rewrite_rules' ) );
-			add_filter( 'template_include', array( $this, 'locate_template' ) );
-		}
 	}
 
 	function create_cpt() {
@@ -58,9 +52,7 @@ abstract class RBM_CPT {
 			'not_found_in_trash' => "No $this->label_plural found in Trash.",
 		) );
 
-		$supports = $this->supports;
-
-		$args = array(
+		$args = wp_parse_args( $this->post_args, array(
 			'labels'             => $labels,
 			'public'             => true,
 			'publicly_queryable' => true,
@@ -72,8 +64,8 @@ abstract class RBM_CPT {
 			'has_archive'        => false,
 			'hierarchical'       => false,
 			'menu_position'      => null,
-			'supports'           => $supports,
-		);
+			'supports'           => $this->supports,
+		) );
 
 		register_post_type( $this->post_type, $args );
 	}
@@ -122,37 +114,5 @@ abstract class RBM_CPT {
 		}
 
 		return $relationships;
-	}
-
-	function add_rewrite_rules() {
-
-		add_rewrite_rule(
-			"^{$this->p2p_archive}/([^/]*)/{$this->post_type}/?",
-			"index.php?{$this->post_type}_{$this->p2p_archive}=\$matches[1]&p2p_type={$this->post_type}&p2p_archive={$this->p2p_archive}",
-			'top'
-		);
-
-		add_rewrite_tag( "%{$this->post_type}_{$this->p2p_archive}%", '([^&]+)' );
-		add_rewrite_tag( "%p2p_type%", '([^&]+)' );
-		add_rewrite_tag( "%p2p_archive%", '([^&]+)' );
-	}
-
-	function locate_template( $template ) {
-
-		global $wp_query;
-
-		if ( isset( $wp_query->query_vars["{$this->post_type}_{$this->p2p_archive}"] ) ) {
-
-			$template = $template = locate_template( array(
-				"{$this->p2p_archive}-archive-{$this->post_type}.php",
-				'p2p-archive.php',
-			) );
-
-			if ( ! $template ) {
-				$template = get_single_template();
-			}
-		}
-
-		return $template;
 	}
 }

@@ -15,7 +15,7 @@ class RBM_CPTS_P2P {
 	/**
 	 * All P2P relationships.
 	 *
-	 * @since 0.1.0
+	 * @since {{VERSION}}
 	 *
 	 * @var string
 	 */
@@ -24,7 +24,7 @@ class RBM_CPTS_P2P {
 	/**
 	 * RBM_CPTS_P2P constructor.
 	 *
-	 * @since 0.1.0
+	 * @since {{VERSION}}
 	 */
 	function __construct() {
 
@@ -43,9 +43,7 @@ class RBM_CPTS_P2P {
 			/**
 			 * Gets all p2p relationships and allows filtering.
 			 *
-			 * @since 0.1.0
-			 *
-			 * @hooked ME10_CPT_Chapter->p2p 10
+			 * @since {{VERSION}}
 			 */
 			$this->relationships = apply_filters( 'p2p_relationships', array() );
 			$retrieved           = true;
@@ -55,7 +53,7 @@ class RBM_CPTS_P2P {
 	/**
 	 * Adds metaboxes for all p2ps.
 	 *
-	 * @since 0.1.0
+	 * @since {{VERSION}}
 	 * @access private
 	 */
 	function add_p2p_meta_boxes() {
@@ -85,7 +83,7 @@ class RBM_CPTS_P2P {
 	/**
 	 * The metabox for establishing p2ps.
 	 *
-	 * @since 0.1.0
+	 * @since {{VERSION}}
 	 * @access private
 	 */
 	function p2p_metabox() {
@@ -113,7 +111,7 @@ class RBM_CPTS_P2P {
 				"{$relationship_post_type->labels->singular_name} this {$post_type_obj->labels->singular_name} belongs to:",
 				false,
 				array(
-					'options'     => wp_list_pluck( $relationship_posts, 'post_title', 'ID' ),
+					'options'     => array( '' => '- None -' ) + wp_list_pluck( $relationship_posts, 'post_title', 'ID' ),
 					'input_class' => 'rbm-select2',
 				)
 			);
@@ -165,7 +163,7 @@ class RBM_CPTS_P2P {
 	/**
 	 * Saves all p2ps for this post.
 	 *
-	 * @since 0.1.0
+	 * @since {{VERSION}}
 	 * @access private
 	 *
 	 * @param int $post_ID The post ID being saved.
@@ -193,10 +191,6 @@ class RBM_CPTS_P2P {
 		if ( $past_relationship_post = rbm_get_field( "p2p_{$relationship}", $post_ID ) ) {
 			if ( $past_relationship_post !== $relationship_post ) {
 				delete_post_meta( $past_relationship_post, "p2p_children_{$post_type}s" );
-			} else {
-
-				// No need to go further, it has already been set
-				return;
 			}
 		}
 
@@ -220,7 +214,7 @@ class RBM_CPTS_P2P {
 	/**
 	 * Deletes p2ps for this post
 	 *
-	 * @since 0.1.0
+	 * @since {{VERSION}}
 	 * @access private
 	 *
 	 * @param int $post_ID The post ID being deleted.
