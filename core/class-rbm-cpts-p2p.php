@@ -98,13 +98,13 @@ class RBM_CPTS_P2P {
 
 			$relationship_post_type = get_post_type_object( $relationship );
 
-			$relationship_posts = get_posts( array(
+			$relationship_posts = get_posts( apply_filters( 'rbm_cpts_available_p2p_posts', array(
 				'post_type'   => $relationship,
 				'numberposts'  => - 1,
 				'post_status' => 'any',
 				'order'       => 'ASC',
 				'orderby'     => 'title',
-			) );
+			) ) );
 
 			rbm_do_field_select(
 				"p2p_{$relationship}",
