@@ -106,12 +106,20 @@ class RBM_CPTS_P2P {
 				'orderby'     => 'title',
 			) ) );
 
+			$options = array( '' => '- None -' ) + wp_list_pluck( $relationship_posts, 'post_title', 'ID' );
+
+			foreach ( $options as $post_ID => $post_title) {
+				if ( $post_title == '' ) {
+					$options[ $post_ID ] = "(no title) Post ID: $post_ID";
+				}
+			}
+
 			rbm_do_field_select(
 				"p2p_{$relationship}",
 				"{$relationship_post_type->labels->singular_name} this {$post_type_obj->labels->singular_name} belongs to:",
 				false,
 				array(
-					'options'     => array( '' => '- None -' ) + wp_list_pluck( $relationship_posts, 'post_title', 'ID' ),
+					'options'     => $options,
 					'input_class' => 'rbm-select2',
 				)
 			);
