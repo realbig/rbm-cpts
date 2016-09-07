@@ -2,7 +2,7 @@
 /**
  * Plugin Name: RBM Custom Post Types
  * Description: Creates custom post types.
- * Version: 0.1.0
+ * Version: 0.1.1
  * Author: Real Big Marketing
  * Author URI: http://realbigmarketing.com
  */
