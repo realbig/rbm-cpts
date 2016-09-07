@@ -91,11 +91,7 @@ if ( ! class_exists( 'RBM_CPTS' ) ) {
 			require_once __DIR__ . '/core/class-rbm-cpt.php';
 			require_once __DIR__ . '/core/class-rbm-cpts-p2p.php';
 
-			require_once __DIR__ . '/core/cpts/class-rbm-cpt-palm-tree.php';
-
 			$this->p2ps = new RBM_CPTS_P2P();
-
-			$this->cpts['palm-tree'] = new RBM_CPT_PalmTree();
 		}
 	}
 
