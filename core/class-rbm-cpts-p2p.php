@@ -187,36 +187,95 @@ class RBM_CPTS_P2P {
 
 		$relationship = $this->relationships[ $post_type ];
 
-		// If there is none defined, move on
+		$past_relationship_post_ID = rbm_get_field( "p2p_{$relationship}", $post_ID );
+		$past_relationship_post = get_post( $past_relationship_post_ID );
+
+		// If there is none defined, delete any existing and move on
 		if ( ! isset( $_POST["_rbm_p2p_$relationship"] ) ) {
+
+			if ( $past_relationship_post ) {
+
+				delete_post_meta( $past_relationship_post_ID, "p2p_children_{$post_type}s" );
+			}
+
 			return;
 		}
 
-		$relationship_post = $_POST["_rbm_p2p_$relationship"];
+		$relationship_post_ID = $_POST["_rbm_p2p_$relationship"];
 
 		// If there has already been saved relationships, delete any no longer there for each related post, just in case we've
 		// removed some.
-		if ( $past_relationship_post = rbm_get_field( "p2p_{$relationship}", $post_ID ) ) {
-			if ( $past_relationship_post !== $relationship_post ) {
-				delete_post_meta( $past_relationship_post, "p2p_children_{$post_type}s" );
+		if ( $past_relationship_post ) {
+
+			if ( $past_relationship_post_ID != $relationship_post_ID ) {
+
+				delete_post_meta( $past_relationship_post_ID, "p2p_children_{$post_type}s" );
 			}
 		}
 
 		// Get new relationships
-		if ( $relationship_post_relationships = get_post_meta( $relationship_post, "p2p_children_{$post_type}s", true ) ) {
+		if ( $relationship_post_relationships = get_post_meta( $relationship_post_ID, "p2p_children_{$post_type}s", true ) ) {
+
+			// Make sure all relationships are still valid!
+			$valid_relationships = $this->validate_relationships( $relationship_post_relationships, $post_type );
+
+			if ( empty( $valid_relationships ) ) {
+
+				delete_post_meta( $past_relationship_post_ID, "p2p_children_{$post_type}s" );
+				return;
+
+			}
 
 			// If there are already relationships established, add this one to it, if not already
-			if ( ! in_array( $post_ID, $relationship_post_relationships ) ) {
+			if ( ! in_array( $post_ID, $valid_relationships ) ) {
 
-				$relationship_post_relationships[] = $post_ID;
-				update_post_meta( $relationship_post, "p2p_children_{$post_type}s", $relationship_post_relationships );
+				$valid_relationships[] = $post_ID;
+			}
+
+			// If there's a difference, update it
+			if ( $valid_relationships !== $relationship_post_relationships ) {
+
+				update_post_meta( $relationship_post_ID, "p2p_children_{$post_type}s", $valid_relationships );
 			}
 
 		} else {
 
 			// If there are no relationships established yet, add this as the first
-			update_post_meta( $relationship_post, "p2p_children_{$post_type}s", array( $post_ID ) );
+			update_post_meta( $relationship_post_ID, "p2p_children_{$post_type}s", array( $post_ID ) );
 		}
+	}
+
+	/**
+	 * If any relationship posts don't exist, remove them.
+	 *
+	 * @since {{VERSION}}
+	 * @access private
+	 *
+	 * @param array $relationships Array of post IDs.
+	 * @param bool|string $post_type If set, it will also match against a post type.
+	 *
+	 * @return array
+	 */
+	function validate_relationships( $relationships, $post_type = false ) {
+
+		$valid_relationships = array();
+
+		foreach ( $relationships as $relationship_post_ID ) {
+
+			if ( ! get_post( $relationship_post_ID ) ) {
+
+				continue;
+			}
+
+			if ( $post_type !== false && $post_type != get_post_type( $relationship_post_ID ) ) {
+
+				continue;
+			}
+
+			$valid_relationships[] = $relationship_post_ID;
+		}
+
+		return $valid_relationships;
 	}
 
 	/**
