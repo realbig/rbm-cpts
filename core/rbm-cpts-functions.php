@@ -41,7 +41,7 @@ function rbm_cpts_get_p2p_parent( $p2p_type, $post_ID = false ) {
 		}
 	}
 
-	return get_post_meta( $post_ID, "p2p_$p2p_type", true );
+	return get_post_meta( $post_ID, "_rbm_p2p_$p2p_type", true );
 }
 
 /**
