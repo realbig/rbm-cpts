@@ -174,10 +174,11 @@ class RBM_CPTS_P2P {
 			}
 
 			$relationship_posts = get_posts( array(
-				'post_type' => $relationship,
-				'post__in'  => $relationship_posts,
-				'order'     => 'ASC',
-				'orderby'   => 'title',
+				'post_type'   => $relationship,
+				'post__in'    => $relationship_posts,
+				'order'       => 'ASC',
+				'orderby'     => 'title',
+				'numberposts' => - 1,
 			) );
 
 			if ( $relationship_posts ) : ?>
@@ -214,7 +215,13 @@ class RBM_CPTS_P2P {
 	 */
 	function save_p2ps( $post_ID ) {
 
-		$post_type = get_post_type();
+		// Make sure this is the main post being saved
+		if ( $post_ID != $_POST['post_ID'] ) {
+
+			return;
+		}
+
+		$post_type = get_post_type( $post_ID );
 		$this->get_p2p_relationships();
 
 		if ( ! isset( $this->relationships[ $post_type ] ) ) {
@@ -225,12 +232,11 @@ class RBM_CPTS_P2P {
 		$relationship = $this->relationships[ $post_type ];
 
 		$past_relationship_post_ID = rbm_get_field( "p2p_{$relationship}", $post_ID );
-		$past_relationship_post    = get_post( $past_relationship_post_ID );
 
 		// If there is none defined, delete any existing and move on
-		if ( ! isset( $_POST["_rbm_p2p_$relationship"] ) ) {
+		if ( ! isset( $_POST["_rbm_p2p_$relationship"] ) || ! $_POST["_rbm_p2p_$relationship"] ) {
 
-			if ( $past_relationship_post ) {
+			if ( get_post( $past_relationship_post_ID ) ) {
 
 				delete_post_meta( $past_relationship_post_ID, "p2p_children_{$post_type}s" );
 			}
@@ -242,7 +248,7 @@ class RBM_CPTS_P2P {
 
 		// If there has already been saved relationships, delete any no longer there for each related post, just in case we've
 		// removed some.
-		if ( $past_relationship_post ) {
+		if ( $past_relationship_post_ID && get_post( $past_relationship_post_ID ) ) {
 
 			if ( $past_relationship_post_ID != $relationship_post_ID ) {
 
