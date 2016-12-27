@@ -34,11 +34,15 @@ class RBM_CPTS_P2P {
 		add_action( 'before_delete_post', array( $this, 'delete_p2ps' ) );
 	}
 
+	/**
+	 * Gets all p2ps.
+	 *
+	 * @since {{VERSION}}
+	 * @access private
+	 */
 	function get_p2p_relationships() {
 
-		static $retrieved = false;
-
-		if ( ! $retrieved ) {
+		if ( ! $this->relationships ) {
 
 			/**
 			 * Gets all p2p relationships and allows filtering.
@@ -46,7 +50,6 @@ class RBM_CPTS_P2P {
 			 * @since {{VERSION}}
 			 */
 			$this->relationships = apply_filters( 'p2p_relationships', array() );
-			$retrieved           = true;
 		}
 	}
 
@@ -64,16 +67,18 @@ class RBM_CPTS_P2P {
 		if ( ! isset( $this->relationships[ $post_type ] ) &&
 		     ! in_array( $post_type, $this->relationships )
 		) {
+
 			return;
 		}
 
 		if ( ! has_filter( 'rbm_load_select2', '__return_true' ) ) {
+
 			add_filter( 'rbm_load_select2', '__return_true' );
 		}
 
 		add_meta_box(
-			'p2ps',
-			'Hierarchies',
+			'rbm-p2ps',
+			'Post to Post',
 			array( $this, 'p2p_metabox' ),
 			$post_type,
 			'side'
@@ -88,83 +93,114 @@ class RBM_CPTS_P2P {
 	 */
 	function p2p_metabox() {
 
-		$post_type     = get_post_type();
-		$post_type_obj = get_post_type_object( $post_type );
+		$post_type = get_post_type();
+
 		$this->get_p2p_relationships();
 
+		// Load the proper metabox
 		if ( isset( $this->relationships[ $post_type ] ) ) {
 
-			$relationship = $this->relationships[ $post_type ];
+			$this->p2p_child_metabox();
 
-			$relationship_post_type = get_post_type_object( $relationship );
+		} elseif ( in_array( $post_type, $this->relationships ) ) {
 
-			$relationship_posts = get_posts( apply_filters( 'rbm_cpts_available_p2p_posts', array(
-				'post_type'   => $relationship,
-				'numberposts'  => - 1,
-				'post_status' => 'any',
-				'order'       => 'ASC',
-				'orderby'     => 'title',
-			) ) );
+			$this->p2p_parent_metabox();
+		}
+	}
 
-			$options = array( '' => '- None -' ) + wp_list_pluck( $relationship_posts, 'post_title', 'ID' );
+	/**
+	 * Loads the child metabox.
+	 *
+	 * @since {{VERSION}}
+	 * @access private
+	 */
+	private function p2p_child_metabox() {
 
-			foreach ( $options as $post_ID => $post_title) {
-				if ( $post_title == '' ) {
-					$options[ $post_ID ] = "(no title) Post ID: $post_ID";
-				}
+		$post_type     = get_post_type();
+		$post_type_obj = get_post_type_object( $post_type );
+
+		$relationship = $this->relationships[ $post_type ];
+
+		$relationship_post_type = get_post_type_object( $relationship );
+
+		$relationship_posts = get_posts( apply_filters( 'rbm_cpts_available_p2p_posts', array(
+			'post_type'   => $relationship,
+			'numberposts' => - 1,
+			'post_status' => 'any',
+			'order'       => 'ASC',
+			'orderby'     => 'title',
+		) ) );
+
+		$options = array( '' => '- None -' ) + wp_list_pluck( $relationship_posts, 'post_title', 'ID' );
+
+		foreach ( $options as $post_ID => $post_title ) {
+			if ( $post_title == '' ) {
+				$options[ $post_ID ] = "(no title) Post ID: $post_ID";
 			}
-
-			rbm_do_field_select(
-				"p2p_{$relationship}",
-				"{$relationship_post_type->labels->singular_name} this {$post_type_obj->labels->singular_name} belongs to:",
-				false,
-				array(
-					'options'     => $options,
-					'input_class' => 'rbm-select2',
-				)
-			);
-
-			echo '<hr/>';
 		}
 
-		foreach ( $this->relationships as $child => $relationship ) {
-			if ( $post_type == $relationship ) :
+		rbm_do_field_select(
+			"p2p_{$relationship}",
+			"{$relationship_post_type->labels->singular_name} this {$post_type_obj->labels->singular_name} belongs to:",
+			false,
+			array(
+				'options'     => $options,
+				'input_class' => 'rbm-select2',
+			)
+		);
 
-				$child_post_type_obj = get_post_type_object( $child );
+		echo '<hr/>';
+	}
 
-				if ( ! ( $relationship_posts = get_post_meta( get_the_ID(), "p2p_children_{$child}s", true ) ) ) {
-					continue;
-				}
+	/**
+	 * Loads the parent metabox.
+	 *
+	 * @since {{VERSION}}
+	 * @access private
+	 */
+	private function p2p_parent_metabox() {
 
-				$relationship_posts = get_posts( array(
-					'post_type' => $child,
-					'post__in'  => $relationship_posts,
-					'order'     => 'ASC',
-					'orderby'   => 'title',
-				) );
+		$post_type     = get_post_type();
+		$post_type_obj = get_post_type_object( $post_type );
 
-				if ( $relationship_posts ) : ?>
+		$relationships = array_keys( $this->relationships, $post_type );
 
-					<p class="p2p-relationship-posts-list-title">
-						<strong>
-							<?php echo $child_post_type_obj->labels->name; ?> that belong to this
-							<?php echo $post_type_obj->labels->singular_name; ?>:
-						</strong>
-					</p>
+		foreach ( $relationships as $relationship ) {
 
-					<ul class="p2p-relationship-posts-list">
-						<?php foreach ( $relationship_posts as $relationship_post ) : ?>
-							<li>
-								<a href="<?php echo get_edit_post_link( $relationship_post->ID ); ?>">
-									<?php echo $relationship_post->post_title; ?>
-								</a>
-							</li>
-						<?php endforeach; ?>
-					</ul>
+			$child_post_type_obj = get_post_type_object( $relationship );
 
-					<hr/>
-				<?php endif;
-			endif;
+			if ( ! ( $relationship_posts = get_post_meta( get_the_ID(), "p2p_children_{$relationship}s", true ) ) ) {
+				continue;
+			}
+
+			$relationship_posts = get_posts( array(
+				'post_type' => $relationship,
+				'post__in'  => $relationship_posts,
+				'order'     => 'ASC',
+				'orderby'   => 'title',
+			) );
+
+			if ( $relationship_posts ) : ?>
+
+				<p class="p2p-relationship-posts-list-title">
+					<strong>
+						<?php echo $child_post_type_obj->labels->name; ?> that belong to this
+						<?php echo $post_type_obj->labels->singular_name; ?>:
+					</strong>
+				</p>
+
+				<ul class="p2p-relationship-posts-list">
+					<?php foreach ( $relationship_posts as $relationship_post ) : ?>
+						<li>
+							<a href="<?php echo get_edit_post_link( $relationship_post->ID ); ?>">
+								<?php echo $relationship_post->post_title; ?>
+							</a>
+						</li>
+					<?php endforeach; ?>
+				</ul>
+
+				<hr/>
+			<?php endif;
 		}
 	}
 
@@ -182,13 +218,14 @@ class RBM_CPTS_P2P {
 		$this->get_p2p_relationships();
 
 		if ( ! isset( $this->relationships[ $post_type ] ) ) {
+
 			return;
 		}
 
 		$relationship = $this->relationships[ $post_type ];
 
 		$past_relationship_post_ID = rbm_get_field( "p2p_{$relationship}", $post_ID );
-		$past_relationship_post = get_post( $past_relationship_post_ID );
+		$past_relationship_post    = get_post( $past_relationship_post_ID );
 
 		// If there is none defined, delete any existing and move on
 		if ( ! isset( $_POST["_rbm_p2p_$relationship"] ) ) {
@@ -222,6 +259,7 @@ class RBM_CPTS_P2P {
 			if ( empty( $valid_relationships ) ) {
 
 				delete_post_meta( $past_relationship_post_ID, "p2p_children_{$post_type}s" );
+
 				return;
 
 			}

@@ -110,6 +110,7 @@ abstract class RBM_CPT {
 	function p2p( $relationships ) {
 
 		if ( $this->p2p ) {
+
 			$relationships[ $this->post_type ] = $this->p2p;
 		}
 
