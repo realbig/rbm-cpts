@@ -5,6 +5,8 @@
  * Version: 0.1.1
  * Author: Real Big Marketing
  * Author URI: http://realbigmarketing.com
+ * GitHub Plugin URI: realbig/rbm-cpts
+ * GitHub Branch: develop
  */
 
 defined( 'ABSPATH' ) || die();
