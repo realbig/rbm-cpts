@@ -6,7 +6,7 @@
  * Author: Real Big Marketing
  * Author URI: http://realbigmarketing.com
  * GitHub Plugin URI: realbig/rbm-cpts
- * GitHub Branch: issue/9/p2p-select-args-filter
+ * GitHub Branch: develop
  */
 
 defined( 'ABSPATH' ) || die();
