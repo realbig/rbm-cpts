@@ -233,62 +233,80 @@ class RBM_CPTS_P2P {
 
 		$relationship = $this->relationships[ $post_type ];
 
-		$past_relationship_post_ID = rbm_get_field( "p2p_{$relationship}", $post_ID );
+		$past_relationship_posts = rbm_get_field( "p2p_{$relationship}", $post_ID );
+		if ( ! is_array( $past_relationship_posts ) ) $past_relationship_posts = array( $past_relationships );
 
 		// If there is none defined, delete any existing and move on
 		if ( ! isset( $_POST["_rbm_p2p_$relationship"] ) || ! $_POST["_rbm_p2p_$relationship"] ) {
+			
+			foreach ( $past_relationship_posts as $past_relationship_post_ID ) {
 
-			if ( get_post( $past_relationship_post_ID ) ) {
+				if ( get_post( $past_relationship_post_ID ) ) {
 
-				delete_post_meta( $past_relationship_post_ID, "p2p_children_{$post_type}s" );
+					delete_post_meta( $past_relationship_post_ID, "p2p_children_{$post_type}s" );
+
+				}
+				
 			}
 
 			return;
 		}
 
-		$relationship_post_ID = $_POST["_rbm_p2p_$relationship"];
+		$relationship_posts = $_POST["_rbm_p2p_$relationship"];
+		if ( ! is_array( $relationship_posts ) ) $relationship_posts = array( $relationship_posts );
 
 		// If there has already been saved relationships, delete any no longer there for each related post, just in case we've
 		// removed some.
-		if ( $past_relationship_post_ID && get_post( $past_relationship_post_ID ) ) {
+		if ( $past_relationship_posts ) {
+			
+			foreach ( $past_relationship_posts as $past_relationship_post_ID ) {
 
-			if ( $past_relationship_post_ID != $relationship_post_ID ) {
+				if ( ! in_array( $past_relationship_post_ID, $relationship_posts ) ) {
 
-				delete_post_meta( $past_relationship_post_ID, "p2p_children_{$post_type}s" );
+					delete_post_meta( $past_relationship_post_ID, "p2p_children_{$post_type}s" );
+					
+				}
+				
 			}
+			
 		}
+		
+		foreach ( $relationship_posts as $relationship_post_ID ) {
 
-		// Get new relationships
-		if ( $relationship_post_relationships = get_post_meta( $relationship_post_ID, "p2p_children_{$post_type}s", true ) ) {
+			// Get new relationships
+			if ( $relationship_post_relationships = get_post_meta( $relationship_post_ID, "p2p_children_{$post_type}s", true ) ) {
 
-			// Make sure all relationships are still valid!
-			$valid_relationships = $this->validate_relationships( $relationship_post_relationships, $post_type );
+				// Make sure all relationships are still valid!
+				$valid_relationships = $this->validate_relationships( $relationship_post_relationships, $post_type );
 
-			if ( empty( $valid_relationships ) ) {
+				if ( empty( $valid_relationships ) ) {
 
-				delete_post_meta( $past_relationship_post_ID, "p2p_children_{$post_type}s" );
+					delete_post_meta( $past_relationship_post_ID, "p2p_children_{$post_type}s" );
 
-				return;
+					return;
 
+				}
+
+				// If there are already relationships established, add this one to it, if not already
+				if ( ! in_array( $post_ID, $valid_relationships ) ) {
+
+					$valid_relationships[] = $post_ID;
+				}
+
+				// If there's a difference, update it
+				if ( $valid_relationships !== $relationship_post_relationships ) {
+
+					update_post_meta( $relationship_post_ID, "p2p_children_{$post_type}s", $valid_relationships );
+				}
+
+			} else {
+
+				// If there are no relationships established yet, add this as the first
+				update_post_meta( $relationship_post_ID, "p2p_children_{$post_type}s", array( $post_ID ) );
 			}
-
-			// If there are already relationships established, add this one to it, if not already
-			if ( ! in_array( $post_ID, $valid_relationships ) ) {
-
-				$valid_relationships[] = $post_ID;
-			}
-
-			// If there's a difference, update it
-			if ( $valid_relationships !== $relationship_post_relationships ) {
-
-				update_post_meta( $relationship_post_ID, "p2p_children_{$post_type}s", $valid_relationships );
-			}
-
-		} else {
-
-			// If there are no relationships established yet, add this as the first
-			update_post_meta( $relationship_post_ID, "p2p_children_{$post_type}s", array( $post_ID ) );
+			
 		}
+		
 	}
 
 	/**
@@ -344,27 +362,34 @@ class RBM_CPTS_P2P {
 			$relationship = $this->relationships[ $post_type ];
 
 			// If this post made a p2p
-			if ( $relationship_post = rbm_get_field( "p2p_$relationship", $post_ID ) ) {
+			if ( $relationship_posts = rbm_get_field( "p2p_$relationship", $post_ID ) ) {
+				
+				if ( ! is_array( $relationship_posts ) ) $relationship_posts = array( $relationship_posts );
+				
+				foreach ( $relationship_posts as $relationship_post_ID ) {
 
-				// If the p2p post does indeed have meta for this post ID
-				if ( $relationship_post_relationships = get_post_meta( $relationship_post, "p2p_children_{$post_type}s", true ) ) {
+					// If the p2p post does indeed have meta for this post ID
+					if ( $relationship_post_relationships = get_post_meta( $relationship_post_ID, "p2p_children_{$post_type}s", true ) ) {
 
-					// If this post ID appears in the p2p post meta, remove it
-					if ( ( $key = array_search( $post_ID, $relationship_post_relationships ) ) !== false ) {
+						// If this post ID appears in the p2p post meta, remove it
+						if ( ( $key = array_search( $post_ID, $relationship_post_relationships ) ) !== false ) {
 
-						unset( $relationship_post_relationships[ $key ] );
+							unset( $relationship_post_relationships[ $key ] );
 
-						if ( empty( $relationship_post_relationships ) ) {
+							if ( empty( $relationship_post_relationships ) ) {
 
-							// If it was the only p2p, delete entirley...
-							delete_post_meta( $relationship_post, "p2p_children_{$post_type}s" );
-						} else {
+								// If it was the only p2p, delete entirley...
+								delete_post_meta( $relationship_post_ID, "p2p_children_{$post_type}s" );
+							} else {
 
-							// ...otherwise remove it and update it
-							update_post_meta( $relationship_post, "p2p_children_{$post_type}s", $relationship_post_relationships );
+								// ...otherwise remove it and update it
+								update_post_meta( $relationship_post_ID, "p2p_children_{$post_type}s", $relationship_post_relationships );
+							}
 						}
 					}
+					
 				}
+				
 			}
 		}
 
