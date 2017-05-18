@@ -6,7 +6,7 @@
  * Author: Real Big Marketing
  * Author URI: http://realbigmarketing.com
  * GitHub Plugin URI: realbig/rbm-cpts
- * GitHub Branch: issue/11/saving-p2p-with-multiple-select
+ * GitHub Branch: develop
  */
 
 defined( 'ABSPATH' ) || die();
