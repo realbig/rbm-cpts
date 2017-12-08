@@ -47,6 +47,15 @@ if ( ! class_exists( 'RBM_CPTS' ) ) {
 		 */
 		public $p2ps;
 
+		/**
+		 * RBM Field Helpers instance.
+		 *
+		 * @since {{VERSION}}
+		 *
+		 * @var RBM_FieldHelpers
+		 */
+		public $fieldhelpers;
+
 		private function __clone() {
 		}
 
@@ -95,13 +104,61 @@ if ( ! class_exists( 'RBM_CPTS' ) ) {
 
 			$this->p2ps = new RBM_CPTS_P2P();
 		}
+
+		/**
+		 * Initializes Field Helpers.
+		 *
+		 * @since 1.2.0
+		 * @access private
+		 */
+		private function setup_fieldhelpers() {
+
+			require_once __DIR__ . '/core/library/rbm-field-helpers/rbm-field-helpers.php';
+
+			$this->fieldhelpers = new RBM_FieldHelpers( array(
+				'ID'   => 'rbm_cpt',
+				'l10n' => array(
+					'field_table'    => array(
+						'delete_row'    => __( 'Delete Row', 'rbm-cpts' ),
+						'delete_column' => __( 'Delete Column', 'rbm-cpts' ),
+					),
+					'field_select'   => array(
+						'no_options'       => __( 'No select options.', 'rbm-cpts' ),
+						'error_loading'    => __( 'The results could not be loaded', 'rbm-cpts' ),
+						/* translators: %d is number of characters over input limit */
+						'input_too_long'   => __( 'Please delete %d character(s)', 'rbm-cpts' ),
+						/* translators: %d is number of characters under input limit */
+						'input_too_short'  => __( 'Please enter %d or more characters', 'rbm-cpts' ),
+						'loading_more'     => __( 'Loading more results...', 'rbm-cpts' ),
+						/* translators: %d is maximum number items selectable */
+						'maximum_selected' => __( 'You can only select %d item(s)', 'rbm-cpts' ),
+						'no_results'       => __( 'No results found', 'rbm-cpts' ),
+						'searching'        => __( 'Searching...', 'rbm-cpts' ),
+					),
+					'field_repeater' => array(
+						'collapsable_title' => __( 'New Row', 'rbm-cpts' ),
+						'confirm_delete'    => __( 'Are you sure you want to delete this element?', 'rbm-cpts' ),
+						'delete_item'       => __( 'Delete', 'rbm-cpts' ),
+						'add_item'          => __( 'Add', 'rbm-cpts' ),
+					),
+					'field_media'    => array(
+						'button_text'        => __( 'Upload / Choose Media', 'rbm-cpts' ),
+						'button_remove_text' => __( 'Remove Media', 'rbm-cpts' ),
+						'window_title'       => __( 'Choose Media', 'rbm-cpts' ),
+					),
+					'field_checkbox' => array(
+						'no_options_text' => __( 'No options available.', 'rbm-cpts' ),
+					),
+				),
+			) );
+		}
 	}
 
 	add_action( 'plugins_loaded', 'rbm_cpt_init' );
 
 	function rbm_cpt_init() {
 
-		if ( defined( 'RBM_HELPER_FUNCTIONS' ) ) {
+		if ( class_exists( 'RBM_FieldHelpers' ) ) {
 			require_once __DIR__ . '/core/rbm-cpts-functions.php';
 			RBM_CPTS();
 		} else {
@@ -111,12 +168,12 @@ if ( ! class_exists( 'RBM_CPTS' ) ) {
 
 	function rbm_cpt_init_fail() {
 		?>
-		<div class="error">
-			<p>
-				ERROR: <strong>RBM Custom Post Types</strong> could not load because RBM Field Helpers is not
-				active as a must use plugin on this site.
-			</p>
-		</div>
+        <div class="error">
+            <p>
+                ERROR: <strong>RBM Custom Post Types</strong> could not load because RBM Field Helpers is not
+                active as a must use plugin on this site.
+            </p>
+        </div>
 		<?php
 	}
 }

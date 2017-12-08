@@ -138,18 +138,14 @@ class RBM_CPTS_P2P {
 				$options[ $post_ID ] = "(no title) Post ID: $post_ID";
 			}
 		}
-		
+
 		$p2p_select_field_args = apply_filters( 'rbm_cpts_p2p_select_args', array(
-			'options' => $options,
+			'label'       => "{$relationship_post_type->labels->singular_name} this {$post_type_obj->labels->singular_name} belongs to:",
+			'options'     => $options,
 			'input_class' => 'rbm-select2',
 		), $post_type, $relationship );
 
-		rbm_do_field_select(
-			"p2p_{$relationship}",
-			"{$relationship_post_type->labels->singular_name} this {$post_type_obj->labels->singular_name} belongs to:",
-			false,
-			$p2p_select_field_args
-		);
+		RBM_CPTS()->fieldhelpers->fields->do_field_select( "p2p_{$relationship}", $p2p_select_field_args );
 
 		echo '<hr/>';
 	}
@@ -185,24 +181,24 @@ class RBM_CPTS_P2P {
 
 			if ( $relationship_posts ) : ?>
 
-				<p class="p2p-relationship-posts-list-title">
-					<strong>
+                <p class="p2p-relationship-posts-list-title">
+                    <strong>
 						<?php echo $child_post_type_obj->labels->name; ?> that belong to this
 						<?php echo $post_type_obj->labels->singular_name; ?>:
-					</strong>
-				</p>
+                    </strong>
+                </p>
 
-				<ul class="p2p-relationship-posts-list">
+                <ul class="p2p-relationship-posts-list">
 					<?php foreach ( $relationship_posts as $relationship_post ) : ?>
-						<li>
-							<a href="<?php echo get_edit_post_link( $relationship_post->ID ); ?>">
+                        <li>
+                            <a href="<?php echo get_edit_post_link( $relationship_post->ID ); ?>">
 								<?php echo $relationship_post->post_title; ?>
-							</a>
-						</li>
+                            </a>
+                        </li>
 					<?php endforeach; ?>
-				</ul>
+                </ul>
 
-				<hr/>
+                <hr/>
 			<?php endif;
 		}
 	}
@@ -234,11 +230,13 @@ class RBM_CPTS_P2P {
 		$relationship = $this->relationships[ $post_type ];
 
 		$past_relationship_posts = rbm_get_field( "p2p_{$relationship}", $post_ID );
-		if ( ! is_array( $past_relationship_posts ) ) $past_relationship_posts = array( $past_relationships );
+		if ( ! is_array( $past_relationship_posts ) ) {
+			$past_relationship_posts = array( $past_relationships );
+		}
 
 		// If there is none defined, delete any existing and move on
 		if ( ! isset( $_POST["_rbm_p2p_$relationship"] ) || ! $_POST["_rbm_p2p_$relationship"] ) {
-			
+
 			foreach ( $past_relationship_posts as $past_relationship_post_ID ) {
 
 				if ( get_post( $past_relationship_post_ID ) ) {
@@ -246,31 +244,33 @@ class RBM_CPTS_P2P {
 					delete_post_meta( $past_relationship_post_ID, "p2p_children_{$post_type}s" );
 
 				}
-				
+
 			}
 
 			return;
 		}
 
 		$relationship_posts = $_POST["_rbm_p2p_$relationship"];
-		if ( ! is_array( $relationship_posts ) ) $relationship_posts = array( $relationship_posts );
+		if ( ! is_array( $relationship_posts ) ) {
+			$relationship_posts = array( $relationship_posts );
+		}
 
 		// If there has already been saved relationships, delete any no longer there for each related post, just in case we've
 		// removed some.
 		if ( $past_relationship_posts ) {
-			
+
 			foreach ( $past_relationship_posts as $past_relationship_post_ID ) {
 
 				if ( ! in_array( $past_relationship_post_ID, $relationship_posts ) ) {
 
 					delete_post_meta( $past_relationship_post_ID, "p2p_children_{$post_type}s" );
-					
+
 				}
-				
+
 			}
-			
+
 		}
-		
+
 		foreach ( $relationship_posts as $relationship_post_ID ) {
 
 			// Get new relationships
@@ -304,9 +304,9 @@ class RBM_CPTS_P2P {
 				// If there are no relationships established yet, add this as the first
 				update_post_meta( $relationship_post_ID, "p2p_children_{$post_type}s", array( $post_ID ) );
 			}
-			
+
 		}
-		
+
 	}
 
 	/**
@@ -363,9 +363,11 @@ class RBM_CPTS_P2P {
 
 			// If this post made a p2p
 			if ( $relationship_posts = rbm_get_field( "p2p_$relationship", $post_ID ) ) {
-				
-				if ( ! is_array( $relationship_posts ) ) $relationship_posts = array( $relationship_posts );
-				
+
+				if ( ! is_array( $relationship_posts ) ) {
+					$relationship_posts = array( $relationship_posts );
+				}
+
 				foreach ( $relationship_posts as $relationship_post_ID ) {
 
 					// If the p2p post does indeed have meta for this post ID
@@ -387,9 +389,9 @@ class RBM_CPTS_P2P {
 							}
 						}
 					}
-					
+
 				}
-				
+
 			}
 		}
 
