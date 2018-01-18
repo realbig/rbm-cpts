@@ -117,8 +117,8 @@ if ( ! class_exists( 'RBM_CPTS' ) ) {
 
 			require_once __DIR__ . '/core/library/rbm-field-helpers/rbm-field-helpers.php';
 
-			$this->fieldhelpers = new RBM_FieldHelpers( array(
-				'ID'   => 'rbm_cpt',
+			$this->field_helpers = new RBM_FieldHelpers( array(
+				'ID'   => 'rbm_cpts',
 				'l10n' => array(
 					'field_table'    => array(
 						'delete_row'    => __( 'Delete Row', 'rbm-cpts' ),

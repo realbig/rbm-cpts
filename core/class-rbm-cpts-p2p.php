@@ -235,7 +235,7 @@ class RBM_CPTS_P2P {
 		}
 
 		// If there is none defined, delete any existing and move on
-		if ( ! isset( $_POST["_rbm_p2p_$relationship"] ) || ! $_POST["_rbm_p2p_$relationship"] ) {
+		if ( ! isset( $_POST["rbm_cpts_p2p_$relationship"] ) || ! $_POST["rbm_cpts_p2p_$relationship"] ) {
 
 			foreach ( $past_relationship_posts as $past_relationship_post_ID ) {
 
@@ -250,7 +250,7 @@ class RBM_CPTS_P2P {
 			return;
 		}
 
-		$relationship_posts = $_POST["_rbm_p2p_$relationship"];
+		$relationship_posts = $_POST["rbm_cpts_p2p_$relationship"];
 		if ( ! is_array( $relationship_posts ) ) {
 			$relationship_posts = array( $relationship_posts );
 		}
@@ -409,7 +409,7 @@ class RBM_CPTS_P2P {
 					// If the p2p post does indeed have meta for this post ID
 					if ( $child_post_relationship = rbm_get_field( "p2p_$post_type", $child_relationship ) ) {
 						if ( $child_post_relationship == $post_ID ) {
-							delete_post_meta( $child_relationship, "_rbm_p2p_$post_type" );
+							delete_post_meta( $child_relationship, "rbm_cpts_p2p_$post_type" );
 						}
 					}
 				}
