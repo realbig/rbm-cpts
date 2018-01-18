@@ -89,7 +89,9 @@ if ( ! class_exists( 'RBM_CPTS' ) ) {
 		 */
 		protected function __construct() {
 
+			$this->setup_fieldhelpers();
 			$this->require_necessities();
+			
 		}
 
 		/**
@@ -158,22 +160,9 @@ if ( ! class_exists( 'RBM_CPTS' ) ) {
 
 	function rbm_cpt_init() {
 
-		if ( class_exists( 'RBM_FieldHelpers' ) ) {
-			require_once __DIR__ . '/core/rbm-cpts-functions.php';
-			RBM_CPTS();
-		} else {
-			add_action( 'admin_notices', 'rbm_cpt_init_fail' );
-		}
+		require_once __DIR__ . '/core/rbm-cpts-functions.php';
+		RBM_CPTS();
+		
 	}
-
-	function rbm_cpt_init_fail() {
-		?>
-        <div class="error">
-            <p>
-                ERROR: <strong>RBM Custom Post Types</strong> could not load because RBM Field Helpers is not
-                active as a must use plugin on this site.
-            </p>
-        </div>
-		<?php
-	}
+	
 }
