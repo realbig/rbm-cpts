@@ -15,7 +15,7 @@ class RBM_CPTS_P2P {
 	/**
 	 * All P2P relationships.
 	 *
-	 * @since {{VERSION}}
+	 * @since 1.0.0
 	 *
 	 * @var string
 	 */
@@ -24,7 +24,7 @@ class RBM_CPTS_P2P {
 	/**
 	 * RBM_CPTS_P2P constructor.
 	 *
-	 * @since {{VERSION}}
+	 * @since 1.0.0
 	 */
 	function __construct() {
 
@@ -37,7 +37,7 @@ class RBM_CPTS_P2P {
 	/**
 	 * Gets all p2ps.
 	 *
-	 * @since {{VERSION}}
+	 * @since 1.0.0
 	 * @access private
 	 */
 	function get_p2p_relationships() {
@@ -47,7 +47,7 @@ class RBM_CPTS_P2P {
 			/**
 			 * Gets all p2p relationships and allows filtering.
 			 *
-			 * @since {{VERSION}}
+			 * @since 1.0.0
 			 */
 			$this->relationships = apply_filters( 'p2p_relationships', array() );
 		}
@@ -56,7 +56,7 @@ class RBM_CPTS_P2P {
 	/**
 	 * Adds metaboxes for all p2ps.
 	 *
-	 * @since {{VERSION}}
+	 * @since 1.0.0
 	 * @access private
 	 */
 	function add_p2p_meta_boxes() {
@@ -88,7 +88,7 @@ class RBM_CPTS_P2P {
 	/**
 	 * The metabox for establishing p2ps.
 	 *
-	 * @since {{VERSION}}
+	 * @since 1.0.0
 	 * @access private
 	 */
 	function p2p_metabox() {
@@ -111,7 +111,7 @@ class RBM_CPTS_P2P {
 	/**
 	 * Loads the child metabox.
 	 *
-	 * @since {{VERSION}}
+	 * @since 1.0.0
 	 * @access private
 	 */
 	private function p2p_child_metabox() {
@@ -155,7 +155,7 @@ class RBM_CPTS_P2P {
 	/**
 	 * Loads the parent metabox.
 	 *
-	 * @since {{VERSION}}
+	 * @since 1.0.0
 	 * @access private
 	 */
 	private function p2p_parent_metabox() {
@@ -208,7 +208,7 @@ class RBM_CPTS_P2P {
 	/**
 	 * Saves all p2ps for this post.
 	 *
-	 * @since {{VERSION}}
+	 * @since 1.0.0
 	 * @access private
 	 *
 	 * @param int $post_ID The post ID being saved.
@@ -315,7 +315,7 @@ class RBM_CPTS_P2P {
 	/**
 	 * If any relationship posts don't exist, remove them.
 	 *
-	 * @since {{VERSION}}
+	 * @since 1.0.0
 	 * @access private
 	 *
 	 * @param array $relationships Array of post IDs.
@@ -348,7 +348,7 @@ class RBM_CPTS_P2P {
 	/**
 	 * Deletes p2ps for this post
 	 *
-	 * @since {{VERSION}}
+	 * @since 1.0.0
 	 * @access private
 	 *
 	 * @param int $post_ID The post ID being deleted.
