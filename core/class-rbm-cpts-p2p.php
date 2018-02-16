@@ -140,12 +140,14 @@ class RBM_CPTS_P2P {
 		}
 
 		$p2p_select_field_args = apply_filters( 'rbm_cpts_p2p_select_args', array(
+			'group' => "p2p_{$relationship}",
 			'label'       => "{$relationship_post_type->labels->singular_name} this {$post_type_obj->labels->singular_name} belongs to:",
 			'options'     => $options,
 			'input_class' => 'rbm-select2',
 		), $post_type, $relationship );
 
 		RBM_CPTS()->field_helpers->fields->do_field_select( "p2p_{$relationship}", $p2p_select_field_args );
+		rbm_cpts_init_field_group( "p2p_{$relationship}" );
 
 		echo '<hr/>';
 	}
