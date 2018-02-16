@@ -145,7 +145,7 @@ class RBM_CPTS_P2P {
 			'input_class' => 'rbm-select2',
 		), $post_type, $relationship );
 
-		RBM_CPTS()->fieldhelpers->fields->do_field_select( "p2p_{$relationship}", $p2p_select_field_args );
+		RBM_CPTS()->field_helpers->fields->do_field_select( "p2p_{$relationship}", $p2p_select_field_args );
 
 		echo '<hr/>';
 	}
@@ -230,9 +230,9 @@ class RBM_CPTS_P2P {
 
 		$relationship = $this->relationships[ $post_type ];
 
-		$past_relationship_posts = rbm_get_field( "p2p_{$relationship}", $post_ID );
+		$past_relationship_posts = rbm_cpts_get_field( "p2p_{$relationship}", $post_ID );
 		if ( ! is_array( $past_relationship_posts ) ) {
-			$past_relationship_posts = array( $past_relationships );
+			$past_relationship_posts = array( $past_relationship_posts );
 		}
 
 		// If there is none defined, delete any existing and move on
@@ -363,7 +363,7 @@ class RBM_CPTS_P2P {
 			$relationship = $this->relationships[ $post_type ];
 
 			// If this post made a p2p
-			if ( $relationship_posts = rbm_get_field( "p2p_$relationship", $post_ID ) ) {
+			if ( $relationship_posts = rbm_cpts_get_field( "p2p_$relationship", $post_ID ) ) {
 
 				if ( ! is_array( $relationship_posts ) ) {
 					$relationship_posts = array( $relationship_posts );
@@ -408,7 +408,7 @@ class RBM_CPTS_P2P {
 				foreach ( $child_relationships as $child_relationship ) {
 
 					// If the p2p post does indeed have meta for this post ID
-					if ( $child_post_relationship = rbm_get_field( "p2p_$post_type", $child_relationship ) ) {
+					if ( $child_post_relationship = rbm_cpts_get_field( "p2p_$post_type", $child_relationship ) ) {
 						if ( $child_post_relationship == $post_ID ) {
 							delete_post_meta( $child_relationship, "rbm_cpts_p2p_$post_type" );
 						}
