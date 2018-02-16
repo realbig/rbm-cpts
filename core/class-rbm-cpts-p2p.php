@@ -214,7 +214,8 @@ class RBM_CPTS_P2P {
 	function save_p2ps( $post_ID ) {
 
 		// Make sure this is the main post being saved
-		if ( $post_ID != $_POST['post_ID'] ) {
+		if ( ! isset( $_POST['post_ID'] ) || 
+					 $post_ID != $_POST['post_ID'] ) {
 
 			return;
 		}
