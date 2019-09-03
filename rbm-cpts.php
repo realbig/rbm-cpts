@@ -2,7 +2,7 @@
 /**
  * Plugin Name: RBM Custom Post Types
  * Description: Creates custom post types.
- * Version: 1.1.3
+ * Version: 1.1.4
  * Author: Real Big Marketing
  * Author URI: http://realbigmarketing.com
  * GitHub Plugin URI: realbig/rbm-cpts
@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || die();
 if ( ! class_exists( 'RBM_CPTS' ) ) {
 
 	// Define plugin constants
-	define( 'RBM_CPTS_VERSION', '1.1.3' );
+	define( 'RBM_CPTS_VERSION', '1.1.4' );
 	define( 'RBM_CPTS_DIR', plugin_dir_path( __FILE__ ) );
 	define( 'RBM_CPTS_URL', plugins_url( '', __FILE__ ) );
 
