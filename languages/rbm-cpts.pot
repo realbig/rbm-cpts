@@ -19,74 +19,82 @@ msgctxt "%s is the Field Type"
 msgid "A callback function called \"rbm_cpts_do_field_%s\" does not exist."
 msgstr ""
 
-#: rbm-cpts.php:124
+#: rbm-cpts.php:109
+msgid "To use the %s Plugin, %s must be installed!"
+msgstr ""
+
+#: rbm-cpts.php:109
+msgid "RBM Field Helpers"
+msgstr ""
+
+#: rbm-cpts.php:225
 msgid "Delete Row"
 msgstr ""
 
-#: rbm-cpts.php:125
+#: rbm-cpts.php:226
 msgid "Delete Column"
 msgstr ""
 
-#: rbm-cpts.php:128
+#: rbm-cpts.php:229
 msgid "No select options."
 msgstr ""
 
-#: rbm-cpts.php:129
+#: rbm-cpts.php:230
 msgid "The results could not be loaded"
 msgstr ""
 
-#: rbm-cpts.php:131
+#: rbm-cpts.php:232
 msgid "Please delete %d character(s)"
 msgstr ""
 
-#: rbm-cpts.php:133
+#: rbm-cpts.php:234
 msgid "Please enter %d or more characters"
 msgstr ""
 
-#: rbm-cpts.php:134
+#: rbm-cpts.php:235
 msgid "Loading more results..."
 msgstr ""
 
-#: rbm-cpts.php:136
+#: rbm-cpts.php:237
 msgid "You can only select %d item(s)"
 msgstr ""
 
-#: rbm-cpts.php:137
+#: rbm-cpts.php:238
 msgid "No results found"
 msgstr ""
 
-#: rbm-cpts.php:138
+#: rbm-cpts.php:239
 msgid "Searching..."
 msgstr ""
 
-#: rbm-cpts.php:141
+#: rbm-cpts.php:242
 msgid "New Row"
 msgstr ""
 
-#: rbm-cpts.php:142
+#: rbm-cpts.php:243
 msgid "Are you sure you want to delete this element?"
 msgstr ""
 
-#: rbm-cpts.php:143
+#: rbm-cpts.php:244
 msgid "Delete"
 msgstr ""
 
-#: rbm-cpts.php:144
+#: rbm-cpts.php:245
 msgid "Add"
 msgstr ""
 
-#: rbm-cpts.php:147
+#: rbm-cpts.php:248
 msgid "Upload / Choose Media"
 msgstr ""
 
-#: rbm-cpts.php:148
+#: rbm-cpts.php:249
 msgid "Remove Media"
 msgstr ""
 
-#: rbm-cpts.php:149
+#: rbm-cpts.php:250
 msgid "Choose Media"
 msgstr ""
 
-#: rbm-cpts.php:152
+#: rbm-cpts.php:253
 msgid "No options available."
 msgstr ""

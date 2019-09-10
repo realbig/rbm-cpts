@@ -2,7 +2,7 @@
 /**
  * Plugin Name: RBM Custom Post Types
  * Description: Creates custom post types.
- * Version: 1.2.0
+ * Version: 1.2.1
  * Author: Real Big Marketing
  * Author URI: http://realbigmarketing.com
  * GitHub Plugin URI: realbig/rbm-cpts
@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || die();
 if ( ! class_exists( 'RBM_CPTS' ) ) {
 
 	// Define plugin constants
-	define( 'RBM_CPTS_VERSION', '1.2.0' );
+	define( 'RBM_CPTS_VERSION', '1.2.1' );
 	define( 'RBM_CPTS_DIR', plugin_dir_path( __FILE__ ) );
 	define( 'RBM_CPTS_URL', plugins_url( '', __FILE__ ) );
 
@@ -58,13 +58,13 @@ if ( ! class_exists( 'RBM_CPTS' ) ) {
 
 		/**
 		 * @var			array $plugin_data Holds Plugin Header Info
-		 * @since		{{VERSION}}
+		 * @since		1.2.1
 		 */
 		public $plugin_data;
 
 		/**
 		 * @var			array $admin_errors Stores all our Admin Errors to fire at once
-		 * @since		{{VERSION}}
+		 * @since		1.2.1
 		 */
 		private $admin_errors;
 
@@ -125,7 +125,7 @@ if ( ! class_exists( 'RBM_CPTS' ) ) {
 		 * Setup plugin constants
 		 *
 		 * @access	  private
-		 * @since	  {{VERSION}}
+		 * @since	  1.2.1
 		 * @return	  void
 		 */
 		private function setup_constants() {
@@ -164,7 +164,7 @@ if ( ! class_exists( 'RBM_CPTS' ) ) {
 		 * Internationalization
 		 *
 		 * @access	  private 
-		 * @since	  {{VERSION}}
+		 * @since	  1.2.1
 		 * @return	  void
 		 */
 		private function load_textdomain() {
@@ -260,7 +260,7 @@ if ( ! class_exists( 'RBM_CPTS' ) ) {
 		 * Show admin errors.
 		 * 
 		 * @access	  public
-		 * @since	  {{VERSION}}
+		 * @since	  1.2.1
 		 * @return	  void
 		 */
 		public function admin_errors() {
