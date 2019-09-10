@@ -6,7 +6,7 @@
  * Author: Real Big Marketing
  * Author URI: http://realbigmarketing.com
  * GitHub Plugin URI: realbig/rbm-cpts
- * Release Asset: true
+ * GitHub Branch: develop
  */
 
 defined( 'ABSPATH' ) || die();
@@ -56,6 +56,18 @@ if ( ! class_exists( 'RBM_CPTS' ) ) {
 		 */
 		public $fieldhelpers;
 
+		/**
+		 * @var			array $plugin_data Holds Plugin Header Info
+		 * @since		{{VERSION}}
+		 */
+		public $plugin_data;
+
+		/**
+		 * @var			array $admin_errors Stores all our Admin Errors to fire at once
+		 * @since		{{VERSION}}
+		 */
+		private $admin_errors;
+
 		private function __clone() {
 		}
 
@@ -89,9 +101,100 @@ if ( ! class_exists( 'RBM_CPTS' ) ) {
 		 */
 		protected function __construct() {
 
+			$this->setup_constants();
+			$this->load_textdomain();
+
+			if ( ! class_exists( 'RBM_FieldHelpers' ) ) {
+
+				$this->admin_errors[] = sprintf( __( 'To use the %s Plugin, %s must be installed!', 'rbm-cpts' ), '<strong>' . $this->plugin_data['Name'] . '</strong>', '<a href="//github.com/realbig/rbm-field-helpers-wrapper/" target="_blank">' . __( 'RBM Field Helpers', 'rbm-cpts' ) . '</a>' );
+				
+				if ( ! has_action( 'admin_notices', array( $this, 'admin_errors' ) ) ) {
+					add_action( 'admin_notices', array( $this, 'admin_errors' ) );
+				}
+				
+				return false;
+
+			}
+
 			$this->setup_fieldhelpers();
 			$this->require_necessities();
 			
+		}
+
+		/**
+		 * Setup plugin constants
+		 *
+		 * @access	  private
+		 * @since	  {{VERSION}}
+		 * @return	  void
+		 */
+		private function setup_constants() {
+			
+			// WP Loads things so weird. I really want this function.
+			if ( ! function_exists( 'get_plugin_data' ) ) {
+				require_once ABSPATH . '/wp-admin/includes/plugin.php';
+			}
+			
+			// Only call this once, accessible always
+			$this->plugin_data = get_plugin_data( __FILE__ );
+
+			if ( ! defined( 'RBM_CPTS_VER' ) ) {
+				// Plugin version
+				define( 'RBM_CPTS_VER', $this->plugin_data['Version'] );
+			}
+
+			if ( ! defined( 'RBM_CPTS_DIR' ) ) {
+				// Plugin path
+				define( 'RBM_CPTS_DIR', plugin_dir_path( __FILE__ ) );
+			}
+
+			if ( ! defined( 'RBM_CPTS_URL' ) ) {
+				// Plugin URL
+				define( 'RBM_CPTS_URL', plugin_dir_url( __FILE__ ) );
+			}
+			
+			if ( ! defined( 'RBM_CPTS_FILE' ) ) {
+				// Plugin File
+				define( 'RBM_CPTS_FILE', __FILE__ );
+			}
+
+		}
+
+		/**
+		 * Internationalization
+		 *
+		 * @access	  private 
+		 * @since	  {{VERSION}}
+		 * @return	  void
+		 */
+		private function load_textdomain() {
+
+			// Set filter for language directory
+			$lang_dir = RBM_CPTS_DIR . '/languages/';
+			$lang_dir = apply_filters( 'rbm_cpts_languages_directory', $lang_dir );
+
+			// Traditional WordPress plugin locale filter
+			$locale = apply_filters( 'plugin_locale', get_locale(), 'rbm-cpts' );
+			$mofile = sprintf( '%1$s-%2$s.mo', 'rbm-cpts', $locale );
+
+			// Setup paths to current locale file
+			$mofile_local   = $lang_dir . $mofile;
+			$mofile_global  = WP_LANG_DIR . '/rbm-cpts/' . $mofile;
+
+			if ( file_exists( $mofile_global ) ) {
+				// Look in global /wp-content/languages/rbm-cpts/ folder
+				// This way translations can be overridden via the Theme/Child Theme
+				load_textdomain( 'rbm-cpts', $mofile_global );
+			}
+			else if ( file_exists( $mofile_local ) ) {
+				// Look in local /wp-content/plugins/rbm-cpts/languages/ folder
+				load_textdomain( 'rbm-cpts', $mofile_local );
+			}
+			else {
+				// Load the default language files
+				load_plugin_textdomain( 'rbm-cpts', false, $lang_dir );
+			}
+
 		}
 
 		/**
@@ -114,8 +217,6 @@ if ( ! class_exists( 'RBM_CPTS' ) ) {
 		 * @access private
 		 */
 		private function setup_fieldhelpers() {
-
-			require_once __DIR__ . '/core/library/rbm-field-helpers/rbm-field-helpers.php';
 
 			$this->field_helpers = new RBM_FieldHelpers( array(
 				'ID'   => 'rbm_cpts',
@@ -154,6 +255,26 @@ if ( ! class_exists( 'RBM_CPTS' ) ) {
 				),
 			) );
 		}
+
+		/**
+		 * Show admin errors.
+		 * 
+		 * @access	  public
+		 * @since	  {{VERSION}}
+		 * @return	  void
+		 */
+		public function admin_errors() {
+			?>
+			<div class="error">
+				<?php foreach ( $this->admin_errors as $notice ) : ?>
+					<p>
+						<?php echo $notice; ?>
+					</p>
+				<?php endforeach; ?>
+			</div>
+			<?php
+		}
+
 	}
 
 	add_action( 'plugins_loaded', 'rbm_cpt_init' );
