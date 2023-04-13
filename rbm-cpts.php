@@ -68,10 +68,10 @@ if ( ! class_exists( 'RBM_CPTS' ) ) {
 		 */
 		private $admin_errors;
 
-		private function __clone() {
+		public function __clone() {
 		}
 
-		private function __wakeup() {
+		public function __wakeup() {
 		}
 
 		/**
